@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartPlayer 2.0</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div id="app">
+        <div id="topBar">
+            <div id="connectionStatus" class="connection-status">
+                <div class="connection-info">
+                    <div class="status-line">
+                        <span class="status-dot"></span>
+                        <span class="status-text">Disconnected</span>
+                    </div>
+                    <div class="ws-url" id="wsUrl">ws://loading...</div>
+                </div>
+                <button id="wsOverrideBtn" class="control-btn small">
+                    <i class="fas fa-edit"></i>
+                </button>
+            </div>
+            <div id="globalControls">
+                <button id="rescanButton" class="control-btn">
+                    <i class="fas fa-sync"></i> Rescan Media
+                </button>
+                <button id="muteAll" class="control-btn">
+                    <i class="fas fa-volume-mute"></i> Mute
+                </button>
+                <button id="blackScreen" class="control-btn">
+                    <i class="fas fa-tv"></i> Black
+                </button>
+                <div id="videoOpacityControl">
+                    <label>Opacity:</label>
+                    <input type="range" id="videoOpacity" min="0" max="100" value="100">
+                </div>
+            </div>
+        </div>
+
+        <div id="mainContent">
+            <div id="mediaSection">
+                <div id="mediaContainer">
+                    <button id="fullscreenBtn" class="control-btn">
+                        <i class="fas fa-expand"></i>
+                    </button>
+                    <div id="enablePlaybackOverlay" class="overlay">
+                        <div class="overlay-content">
+                            <i class="fas fa-play-circle fa-4x"></i>
+                            <p>Click to enable media playback</p>
+                        </div>
+                    </div>
+                    <div id="mainViewer">
+                        <video id="videoPlayer" playsinline></video>
+                        <audio id="audioPlayer" controls></audio>
+                        <img id="imagePlayer" alt="Image content">
+                    </div>
+                </div>
+
+                <div id="playerControls">
+                    <div id="videoControls" class="control-group">
+                        <div class="control-header">
+                            <h3>Video</h3>
+                            <div id="selectedVideoTitle" class="selected-title"></div>
+                        </div>
+                        <div class="control-panel">
+                            <div class="buttons">
+                                <button id="playVideo" class="control-btn"><i class="fas fa-play"></i></button>
+                                <button id="pauseVideo" class="control-btn"><i class="fas fa-pause"></i></button>
+                                <button id="resetVideo" class="control-btn"><i class="fas fa-undo"></i></button>
+                                <div class="volume-control">
+                                    <button id="videoVolumeDown" class="control-btn small"><i class="fas fa-minus"></i></button>
+                                    <button id="videoVolumeUp" class="control-btn small"><i class="fas fa-plus"></i></button>
+                                </div>
+                            </div>
+                            <div id="videoProgress" class="progress-bar">
+                                <div class="progress-fill"></div>
+                            </div>
+                            <div class="time-display" id="videoTimeDisplay">0:00 / 0:00</div>
+                        </div>
+                    </div>
+
+                    <div id="audioControls" class="control-group">
+                        <div class="control-header">
+                            <h3>Audio</h3>
+                            <div id="selectedAudioTitle" class="selected-title"></div>
+                        </div>
+                        <div class="control-panel">
+                            <div class="buttons">
+                                <button id="playAudio" class="control-btn"><i class="fas fa-play"></i></button>
+                                <button id="pauseAudio" class="control-btn"><i class="fas fa-pause"></i></button>
+                                <button id="resetAudio" class="control-btn"><i class="fas fa-undo"></i></button>
+                                <div class="volume-control">
+                                    <button id="audioVolumeDown" class="control-btn small"><i class="fas fa-minus"></i></button>
+                                    <button id="audioVolumeUp" class="control-btn small"><i class="fas fa-plus"></i></button>
+                                </div>
+                            </div>
+                            <div id="audioProgress" class="progress-bar">
+                                <div class="progress-fill"></div>
+                            </div>
+                            <div class="time-display" id="audioTimeDisplay">0:00 / 0:00</div>
+                        </div>
+                    </div>
+
+                    <div id="imageControls" class="control-group">
+                        <div class="control-header">
+                            <h3>Image</h3>
+                            <div id="selectedImageTitle" class="selected-title"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="playlistSection">
+                <div id="playlistHeader">
+                    <button id="backButton" class="hidden">
+                        <i class="fas fa-arrow-left"></i> Back
+                    </button>
+                    <div id="currentPath"></div>
+                </div>
+                <div id="itemList"></div>
+            </div>
+        </div>
+    </div>
+    <script src="js/SmartPlayer.js" type="module"></script>
+</body>
+</html> 
