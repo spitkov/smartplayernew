@@ -1034,26 +1034,77 @@ input[type="range"]::-webkit-slider-thumb {
     #playerControls {
         margin-top: 10px;
         padding: 10px;
+        display: flex;
+        flex-direction: row;
+        gap: 5px;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
     }
 
     .control-group {
-        padding: 10px;
+        flex: 1;
+        min-width: 200px;
+        padding: 8px;
+        margin-bottom: 0;
+        border-left-width: 2px;
+    }
+
+    /* Compact control headers */
+    .control-header {
         margin-bottom: 5px;
     }
 
-    /* Make controls more compact on mobile */
+    .control-header h3 {
+        font-size: 0.9rem;
+    }
+
+    .selected-title {
+        font-size: 0.8rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 120px;
+    }
+
+    /* Compact control panels */
     .control-panel {
-        gap: 5px;
+        gap: 3px;
     }
 
     .buttons {
-        flex-wrap: wrap;
-        gap: 5px;
+        gap: 3px;
     }
 
     .control-btn {
-        padding: 6px 12px;
-        font-size: 0.9rem;
+        padding: 5px 8px;
+        font-size: 0.8rem;
+    }
+
+    .volume-control {
+        gap: 3px;
+    }
+
+    .volume-control .control-btn.small {
+        padding: 4px 6px;
+    }
+
+    .volume-display {
+        font-size: 0.7rem;
+        min-width: 35px;
+    }
+
+    .progress-bar {
+        height: 8px;
+        margin: 5px 0;
+    }
+
+    .time-display {
+        font-size: 0.7rem;
+    }
+
+    /* Hide empty control groups */
+    .control-group:empty {
+        display: none;
     }
 
     /* Adjust playlist section for mobile */
@@ -1164,7 +1215,7 @@ input[type="range"]::-webkit-slider-thumb {
     }
 
     .control-btn {
-        padding: 8px;
+        padding: 4px 6px;
     }
 
     .control-btn.small {
@@ -1188,6 +1239,68 @@ input[type="range"]::-webkit-slider-thumb {
     .ws-url {
         margin-left: 0;
         margin-top: 4px;
+    }
+
+    /* Make controls even more compact on very small screens */
+    .control-group {
+        min-width: 160px;
+        padding: 6px;
+    }
+
+    .control-header h3 {
+        font-size: 0.8rem;
+    }
+
+    .selected-title {
+        max-width: 100px;
+    }
+
+    /* Ensure horizontal scrolling is smooth */
+    #playerControls {
+        scrollbar-width: none; /* Firefox */
+        -ms-overflow-style: none; /* IE/Edge */
+    }
+
+    #playerControls::-webkit-scrollbar {
+        display: none; /* Chrome/Safari */
+    }
+}
+
+/* Add smooth scrolling behavior for the controls */
+#playerControls {
+    scroll-behavior: smooth;
+}
+
+/* Add visual indicator for horizontal scrolling on mobile */
+@media screen and (max-width: 768px) {
+    #playerControls::after {
+        content: '';
+        position: absolute;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        width: 20px;
+        background: linear-gradient(to right, transparent, rgba(0,0,0,0.2));
+        pointer-events: none;
+        opacity: 0;
+        transition: opacity 0.3s;
+    }
+
+    #playerControls:not(:hover)::-webkit-scrollbar {
+        height: 0;
+    }
+
+    #playerControls:hover::-webkit-scrollbar {
+        height: 4px;
+    }
+
+    #playerControls::-webkit-scrollbar-track {
+        background: rgba(0,0,0,0.1);
+    }
+
+    #playerControls::-webkit-scrollbar-thumb {
+        background: var(--accent-color);
+        border-radius: 2px;
     }
 }
 
