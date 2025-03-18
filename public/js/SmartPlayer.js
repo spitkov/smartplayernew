@@ -401,40 +401,6 @@ class SmartPlayer {
                 
             case 'player.selectFile':
                 console.log('Selecting file:', msg.fileID);
-                
-                // Get the file info before loading it
-                if (this.currentFile) {
-                    const currentFile = this.getFileById(this.currentFile);
-                    const newFile = this.getFileById(msg.fileID);
-                    
-                    if (currentFile && newFile) {
-                        // Skip confirmation when switching to images while audio is playing
-                        // Only show confirmation for other media type switches
-                        const isAudioPlayingAndSwitchingToImage = 
-                            currentFile.type === 'audio' && 
-                            newFile.type === 'image' && 
-                            this.audioPlayer.played.length > 0 && 
-                            !this.audioPlayer.paused;
-                            
-                        // Check if we're trying to switch to a new video/audio while one is playing
-                        // But exclude the case of switching to images while audio is playing
-                        if (!isAudioPlayingAndSwitchingToImage && 
-                            ((currentFile.type === 'video' && this.videoPlayer.played.length > 0 && !this.videoPlayer.paused) ||
-                             (currentFile.type === 'audio' && this.audioPlayer.played.length > 0 && !this.audioPlayer.paused))) {
-                            
-                            // Show confirmation when switching while media is playing
-                            const confirmMessage = currentFile.type === newFile.type ? 
-                                `The current ${currentFile.type} hasn't ended yet. Are you sure you want to play another ${newFile.type}?` :
-                                `The current ${currentFile.type} hasn't ended yet. Are you sure you want to switch to ${newFile.type}?`;
-                                
-                            const confirmSwitch = confirm(confirmMessage);
-                            if (!confirmSwitch) {
-                                return; // Don't proceed with the switch
-                            }
-                        }
-                    }
-                }
-                
                 const previousFile = this.currentFile;
                 this.currentFile = msg.fileID;
                 
@@ -448,8 +414,6 @@ class SmartPlayer {
                         if (prevFile.type === newFile.type) {
                             if (prevFile.type === 'video') this.videoPlayer.pause();
                             if (prevFile.type === 'audio') this.audioPlayer.pause();
-                            
-                            // For images, we now handle the transition in loadMedia with preloading
                         }
                         
                         // If playing audio and showing image, don't disrupt audio when switching images
