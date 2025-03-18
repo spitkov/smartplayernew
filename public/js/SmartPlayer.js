@@ -1382,6 +1382,7 @@ class SmartPlayer {
         };
 
         switch (e.key) {
+            // Original keyboard shortcuts
             case 'u':
                 simulateButtonPress(this.playVideoBtn);
                 break;
@@ -1395,6 +1396,7 @@ class SmartPlayer {
                 simulateButtonPress(this.pauseAudioBtn);
                 break;
             case 'b':
+            case 'Enter': // Changed from '0' to 'Enter' for black screen
                 simulateButtonPress(this.blackScreenBtn);
                 break;
             case 'o':
@@ -1403,17 +1405,42 @@ class SmartPlayer {
             case 'l':
                 simulateButtonPress(this.resetAudioBtn);
                 break;
+
+            // Number key navigation
+            case '5':
             case 'ArrowUp':
+                this.handleArrowNavigation({ key: 'ArrowUp', preventDefault: () => {} });
+                break;
+            case '2':
             case 'ArrowDown':
-                this.handleArrowNavigation(e);
+                this.handleArrowNavigation({ key: 'ArrowDown', preventDefault: () => {} });
                 break;
-            case 'Enter':
-                this.handleEnterKey();
-                break;
+            case '1':
             case 'ArrowLeft':
                 if (this.currentFolder) {
                     simulateButtonPress(this.backButton);
                 }
+                break;
+            case '3':
+            case 'ArrowRight':
+                // Right arrow currently has no function
+                break;
+            case '4': // Audio play/pause toggle
+                if (this.audioPlayer.paused) {
+                    simulateButtonPress(this.playAudioBtn);
+                } else {
+                    simulateButtonPress(this.pauseAudioBtn);
+                }
+                break;
+            case '6': // Video play/pause toggle
+                if (this.videoPlayer.paused) {
+                    simulateButtonPress(this.playVideoBtn);
+                } else {
+                    simulateButtonPress(this.pauseVideoBtn);
+                }
+                break;
+            case '0': // Changed from 'Enter' to '0' for selection
+                this.handleEnterKey();
                 break;
         }
     }
