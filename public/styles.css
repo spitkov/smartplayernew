@@ -7,6 +7,17 @@
     --success-color: #2ecc71;
     --error-color: #e74c3c;
     --dark-bg: #1a252f;
+    
+    /* Media type colors */
+    --video-color: #3498db; /* Kék */
+    --audio-color: #e74c3c; /* Piros */
+    --image-color: #2ecc71; /* Zöld */
+    
+    /* Hover colors */
+    --video-hover: #2980b9; /* Sötétebb kék */
+    --audio-hover: #c0392b; /* Sötétebb piros */
+    --image-hover: #27ae60; /* Sötétebb zöld */
+    --accent-hover: #2980b9; /* Általános hover */
 }
 
 * {
@@ -763,4 +774,169 @@ input[type="range"]::-webkit-slider-thumb {
 .overlay.hidden {
     opacity: 0;
     pointer-events: none;
+}
+
+/* Add styles for different media types in playlist */
+.playlist-item.video-file {
+    border-left: 5px solid var(--video-color);
+    box-shadow: 0 0 0 1px rgba(52, 152, 219, 0.3);
+}
+
+.playlist-item.audio-file {
+    border-left: 5px solid var(--audio-color);
+    box-shadow: 0 0 0 1px rgba(231, 76, 60, 0.3);
+}
+
+.playlist-item.image-file {
+    border-left: 5px solid var(--image-color);
+    box-shadow: 0 0 0 1px rgba(46, 204, 113, 0.3);
+}
+
+/* Selected state with media type colors */
+.playlist-item.video-file.selected {
+    background-color: var(--video-color);
+    border-color: var(--video-color);
+}
+
+.playlist-item.audio-file.selected {
+    background-color: var(--audio-color);
+    border-color: var(--audio-color);
+}
+
+.playlist-item.image-file.selected {
+    background-color: var(--image-color);
+    border-color: var(--image-color);
+}
+
+/* Playing items with stronger highlights for each media type */
+.playlist-item.video-file.playing {
+    border-color: var(--video-color);
+    box-shadow: 0 0 0 2px var(--video-color);
+}
+
+.playlist-item.audio-file.playing {
+    border-color: var(--audio-color);
+    box-shadow: 0 0 0 2px var(--audio-color);
+}
+
+.playlist-item.image-file.playing {
+    border-color: var(--image-color);
+    box-shadow: 0 0 0 2px var(--image-color);
+}
+
+/* When an item is both playing and selected */
+.playlist-item.video-file.playing.selected {
+    background-color: var(--video-color);
+    border-color: var(--video-color);
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.7);
+}
+
+.playlist-item.audio-file.playing.selected {
+    background-color: var(--audio-color);
+    border-color: var(--audio-color);
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.7);
+}
+
+.playlist-item.image-file.playing.selected {
+    background-color: var(--image-color);
+    border-color: var(--image-color);
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.7);
+}
+
+/* Control headers with matching colors */
+#videoControls .control-header h3 {
+    color: var(--video-color);
+    font-weight: bold;
+}
+
+#audioControls .control-header h3 {
+    color: var(--audio-color);
+    font-weight: bold;
+}
+
+#imageControls .control-header h3 {
+    color: var(--image-color);
+    font-weight: bold;
+}
+
+/* Color icons based on file type */
+.playlist-item.video-file i {
+    color: var(--video-color);
+}
+
+.playlist-item.audio-file i {
+    color: var(--audio-color);
+}
+
+.playlist-item.image-file i {
+    color: var(--image-color);
+}
+
+/* Make the control groups match the media type colors */
+#videoControls {
+    border-left: 4px solid var(--video-color);
+}
+
+#audioControls {
+    border-left: 4px solid var(--audio-color);
+}
+
+#imageControls {
+    border-left: 4px solid var(--image-color);
+}
+
+/* Match the control buttons to media type colors */
+#videoControls .control-btn {
+    background-color: var(--video-color);
+}
+
+#videoControls .control-btn:hover {
+    background-color: var(--video-hover);
+}
+
+#audioControls .control-btn {
+    background-color: var(--audio-color);
+}
+
+#audioControls .control-btn:hover {
+    background-color: var(--audio-hover);
+}
+
+#imageControls .control-btn {
+    background-color: var(--image-color);
+}
+
+#imageControls .control-btn:hover {
+    background-color: var(--image-hover);
+}
+
+/* Update active state for custom colored buttons */
+#videoControls .control-btn.active {
+    background-color: var(--video-hover);
+    opacity: 1;
+    transform: scale(1.05);
+    box-shadow: 0 0 8px rgba(52, 152, 219, 0.7);
+}
+
+#audioControls .control-btn.active {
+    background-color: var(--audio-hover);
+    opacity: 1;
+    transform: scale(1.05);
+    box-shadow: 0 0 8px rgba(231, 76, 60, 0.7);
+}
+
+#imageControls .control-btn.active {
+    background-color: var(--image-hover);
+    opacity: 1;
+    transform: scale(1.05);
+    box-shadow: 0 0 8px rgba(46, 204, 113, 0.7);
+}
+
+/* Progress bars with matching colors */
+#videoProgress .progress-fill {
+    background-color: var(--video-color);
+}
+
+#audioProgress .progress-fill {
+    background-color: var(--audio-color);
 } 

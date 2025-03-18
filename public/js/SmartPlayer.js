@@ -690,8 +690,17 @@ class SmartPlayer {
             div.classList.add('selected');
         }
         
+        // Add media type class for styling
         if (type === 'file') {
             div.setAttribute('data-file-id', item.id);
+            // Add CSS class based on media type
+            if (item.type === 'video') {
+                div.classList.add('video-file');
+            } else if (item.type === 'audio') {
+                div.classList.add('audio-file');
+            } else if (item.type === 'image') {
+                div.classList.add('image-file');
+            }
         }
 
         // Create header section to contain icon, title and controls
