@@ -276,6 +276,14 @@ wss.on('connection', (ws, req) => {
                         value: msg.value
                     });
                     break;
+                case 'player.wsOverrideConfirm':
+                    // Broadcast WebSocket override confirmation to all clients
+                    broadcastMessage({
+                        type: 'player.wsOverrideConfirm',
+                        url: msg.url,
+                        reconnect: msg.reconnect
+                    });
+                    break;
                 default:
                     // Broadcast to other clients
                     broadcastMessage(msg, ws);

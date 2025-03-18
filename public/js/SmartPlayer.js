@@ -606,6 +606,16 @@ class SmartPlayer {
                     }
                 }
                 break;
+            case 'player.wsOverrideConfirm':
+                // Handle WebSocket override confirmation from another instance
+                if (msg.url) {
+                    localStorage.setItem('wsOverrideUrl', msg.url);
+                    this.overrideWsUrl = msg.url;
+                    if (msg.reconnect && this.socket && this.socket.readyState === WebSocket.OPEN) {
+                        this.connectWebSocket();
+                    }
+                }
+                break;
         }
     }
 
@@ -1666,6 +1676,11 @@ class SmartPlayer {
                 // If we're connected, ask if they want to reconnect now
                 if (this.socket && this.socket.readyState === WebSocket.OPEN) {
                     if (confirm('Do you want to reconnect using the new address now?')) {
+                        // Send confirmation to other instances
+                        this.sendSocketMessage('player.wsOverrideConfirm', {
+                            url: newUrl,
+                            reconnect: true
+                        });
                         this.connectWebSocket();
                     }
                 }
