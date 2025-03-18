@@ -1088,6 +1088,7 @@ input[type="range"]::-webkit-slider-thumb {
 @media screen and (max-width: 768px) {
     #mainContent {
         flex-direction: column;
+        height: 100%;
     }
 
     #mediaSection {
@@ -1095,9 +1096,23 @@ input[type="range"]::-webkit-slider-thumb {
         padding: 8px;
     }
 
+    #playlistSection {
+        flex: 1;
+        min-height: 0; /* Allow shrinking */
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+    }
+
+    #itemList {
+        flex: 1;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+    }
+
     #mediaContainer {
-        min-height: 160px;  /* Even smaller height for mobile */
-        max-height: 180px;  /* Limit maximum height */
+        min-height: 160px;
+        max-height: 180px;
         aspect-ratio: 16/9;
     }
 
