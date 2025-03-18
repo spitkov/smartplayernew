@@ -526,21 +526,26 @@ body {
 }
 
 .playlist-item .item-controls .control-btn {
-    padding: 5px 8px;
-    font-size: 0.8rem;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9rem;
 }
 
-/* Add styles for move buttons */
+.playlist-item .item-controls .control-btn i {
+    margin: 0;
+    width: auto;
+    height: auto;
+    background: none;
+}
+
+/* Remove the specific padding for move buttons since we now have consistent sizing */
 .playlist-item .item-controls .control-btn[title="Move Up"],
 .playlist-item .item-controls .control-btn[title="Move Down"] {
-    padding: 5px;
-    background-color: rgba(52, 152, 219, 0.7);
-}
-
-.playlist-item .item-controls .control-btn[title="Move Up"]:hover,
-.playlist-item .item-controls .control-btn[title="Move Down"]:hover {
-    background-color: rgba(52, 152, 219, 0.9);
-    transform: translateY(-2px);
+    padding: 0;
 }
 
 /* Add subtle animation for reordering */
