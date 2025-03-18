@@ -614,6 +614,14 @@ class SmartPlayer {
                     if (msg.reconnect && this.socket && this.socket.readyState === WebSocket.OPEN) {
                         this.connectWebSocket();
                     }
+                    // Only show alerts if this instance initiated the change
+                    if (msg.isInitiator) {
+                        if (msg.url.trim() === '') {
+                            alert('WebSocket override cleared. Will use default server address on next connection.');
+                        } else {
+                            alert(`WebSocket override set to: ${msg.url}\nWill connect to this address on next connection.`);
+                        }
+                    }
                 }
                 break;
         }
@@ -1679,7 +1687,8 @@ class SmartPlayer {
                         // Send confirmation to other instances
                         this.sendSocketMessage('player.wsOverrideConfirm', {
                             url: newUrl,
-                            reconnect: true
+                            reconnect: true,
+                            isInitiator: true
                         });
                         this.connectWebSocket();
                     }

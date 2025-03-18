@@ -281,7 +281,8 @@ wss.on('connection', (ws, req) => {
                     broadcastMessage({
                         type: 'player.wsOverrideConfirm',
                         url: msg.url,
-                        reconnect: msg.reconnect
+                        reconnect: msg.reconnect,
+                        isInitiator: msg.isInitiator
                     });
                     break;
                 default:
