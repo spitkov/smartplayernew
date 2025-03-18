@@ -158,10 +158,10 @@ class SmartPlayer {
         this.audioProgress.addEventListener('click', (e) => this.handleProgressBarClick(e, 'audio'));
 
         // Volume controls
-        this.videoVolumeUpBtn.addEventListener('click', () => this.adjustVolume('video', 0.1));
-        this.videoVolumeDownBtn.addEventListener('click', () => this.adjustVolume('video', -0.1));
-        this.audioVolumeUpBtn.addEventListener('click', () => this.adjustVolume('audio', 0.1));
-        this.audioVolumeDownBtn.addEventListener('click', () => this.adjustVolume('audio', -0.1));
+        this.videoVolumeUpBtn.addEventListener('click', (e) => this.adjustVolume('video', e.shiftKey ? 0.05 : 0.1));
+        this.videoVolumeDownBtn.addEventListener('click', (e) => this.adjustVolume('video', e.shiftKey ? -0.05 : -0.1));
+        this.audioVolumeUpBtn.addEventListener('click', (e) => this.adjustVolume('audio', e.shiftKey ? 0.05 : 0.1));
+        this.audioVolumeDownBtn.addEventListener('click', (e) => this.adjustVolume('audio', e.shiftKey ? -0.05 : -0.1));
         
         // Opacity control
         this.videoOpacitySlider.addEventListener('input', (e) => {
@@ -424,6 +424,12 @@ class SmartPlayer {
                         else if (prevFile.type === 'image' && newFile.type === 'audio') {
                             // Don't clear the image when loading audio
                         }
+                        // For all other cases, clear the previous media type's title
+                        else if (prevFile.type !== newFile.type) {
+                            if (prevFile.type === 'video') this.selectedVideoTitle.textContent = 'No video selected';
+                            if (prevFile.type === 'audio') this.selectedAudioTitle.textContent = 'No audio selected';
+                            if (prevFile.type === 'image') this.selectedImageTitle.textContent = 'No image selected';
+                        }
                     }
                 }
                 
@@ -570,6 +576,25 @@ class SmartPlayer {
                     }
                 }
                 break;
+                
+            case 'player.setDuration':
+                // Update duration in the local project data
+                if (msg.folderID && msg.fileID && msg.duration) {
+                    const folder = this.projectData.folders[msg.folderID];
+                    if (folder && folder.files[msg.fileID]) {
+                        folder.files[msg.fileID].duration = msg.duration;
+                        
+                        // Update duration display if the file is in the current view
+                        if (this.currentFolder === msg.folderID) {
+                            const durationElement = document.querySelector(`.playlist-item[data-file-id="${msg.fileID}"] .duration`);
+                            if (durationElement) {
+                                durationElement.textContent = this.formatTime(msg.duration);
+                            }
+                        }
+                    }
+                }
+                break;
+                
             case 'player.wsOverrideConfirm':
                 // Handle WebSocket override confirmation from another instance
                 if (msg.url !== undefined) {  // Check if url is defined (can be empty string)
@@ -691,9 +716,62 @@ class SmartPlayer {
         title.className = 'item-title';
         title.textContent = item.title;
         
+        // Add status icon if this is a file
+        if (type === 'file') {
+            // Check if this item is currently selected based on the player control titles
+            const isVideoSelected = item.type === 'video' && this.selectedVideoTitle.textContent === item.title;
+            const isAudioSelected = item.type === 'audio' && this.selectedAudioTitle.textContent === item.title;
+            const isImageSelected = item.type === 'image' && this.selectedImageTitle.textContent === item.title;
+            
+            // Create status icon if this item is currently selected
+            if (isVideoSelected || isAudioSelected || isImageSelected) {
+                const statusIcon = document.createElement('i');
+                statusIcon.className = 'fas fa-check status-icon';
+                title.appendChild(statusIcon);
+            }
+        }
+        
         const description = document.createElement('div');
         description.className = 'item-description';
-        description.textContent = item.description || '';
+        
+        // Add duration span for video and audio files
+        if (type === 'file' && (item.type === 'video' || item.type === 'audio')) {
+            const durationSpan = document.createElement('span');
+            durationSpan.className = 'duration';
+            
+            // Check if we already have the duration stored
+            if (item.duration !== undefined) {
+                durationSpan.textContent = this.formatTime(item.duration);
+            } else {
+                durationSpan.textContent = 'Loading...';
+                
+                // Only create temp media element if we don't have duration
+                const tempMedia = document.createElement(item.type);
+                tempMedia.src = `/media/${this.projectData.folders[this.currentFolder].folderName}/${item.fileName}`;
+                
+                tempMedia.addEventListener('loadedmetadata', () => {
+                    if (tempMedia.duration && !isNaN(tempMedia.duration)) {
+                        // Store the duration in the item data
+                        item.duration = tempMedia.duration;
+                        durationSpan.textContent = this.formatTime(tempMedia.duration);
+                        // Save the project data to persist the duration
+                        this.sendSocketMessage('player.setDuration', {
+                            folderID: this.currentFolder,
+                            fileID: item.id,
+                            duration: tempMedia.duration
+                        });
+                    } else {
+                        durationSpan.textContent = 'Unknown';
+                    }
+                });
+                
+                tempMedia.addEventListener('error', () => {
+                    durationSpan.textContent = 'Error';
+                });
+            }
+            
+            description.appendChild(durationSpan);
+        }
 
         content.appendChild(title);
         content.appendChild(description);
@@ -1666,11 +1744,16 @@ class SmartPlayer {
 
     // Format time in MM:SS format
     formatTime(seconds) {
-        if (isNaN(seconds) || seconds === Infinity) return '0:00';
-        seconds = Math.round(seconds);
-        const minutes = Math.floor(seconds / 60);
-        seconds = seconds % 60;
-        return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+        if (!seconds || isNaN(seconds)) return '0:00';
+        
+        const hours = Math.floor(seconds / 3600);
+        const minutes = Math.floor((seconds % 3600) / 60);
+        const remainingSeconds = Math.floor(seconds % 60);
+        
+        if (hours > 0) {
+            return `${hours}:${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
+        }
+        return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
     }
 
     // Update the time display for a player type

@@ -293,6 +293,40 @@ body {
     opacity: 0.9;
 }
 
+/* Special styling for play and pause buttons */
+#playVideo, #pauseVideo, #playAudio, #pauseAudio {
+    min-width: 90px;
+    padding: 10px 20px;
+    font-size: 0.95rem;
+}
+
+#playVideo::after, #playAudio::after {
+    content: "Play";
+    margin-left: 8px;
+}
+
+#pauseVideo::after, #pauseAudio::after {
+    content: "Pause";
+    margin-left: 8px;
+}
+
+/* Responsive adjustments for play/pause buttons */
+@media screen and (max-width: 768px) {
+    #playVideo, #pauseVideo, #playAudio, #pauseAudio {
+        min-width: 80px;
+        padding: 8px 16px;
+        font-size: 0.9rem;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    #playVideo, #pauseVideo, #playAudio, #pauseAudio {
+        min-width: 70px;
+        padding: 6px 12px;
+        font-size: 0.85rem;
+    }
+}
+
 .control-btn.small {
     padding: 6px 10px;
 }
@@ -446,13 +480,43 @@ body {
 }
 
 .playlist-item .item-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
     font-weight: 500;
-    margin-bottom: 2px;
+    margin-bottom: 4px;
 }
 
 .playlist-item .item-description {
     font-size: 0.8rem;
     opacity: 0.8;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.playlist-item .item-description .duration {
+    background-color: rgba(0, 0, 0, 0.2);
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-family: monospace;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+/* Media type specific duration colors */
+.playlist-item.video-file .duration {
+    color: var(--video-color);
+}
+
+.playlist-item.audio-file .duration {
+    color: var(--audio-color);
+}
+
+/* Selected state duration colors */
+.playlist-item.selected .duration {
+    background-color: rgba(255, 255, 255, 0.2);
+    color: white;
 }
 
 .playlist-item .item-controls {
@@ -1164,6 +1228,11 @@ input[type="range"]::-webkit-slider-thumb {
     .selected-title {
         max-width: 120px;
     }
+
+    .playlist-item .item-description .duration {
+        font-size: 0.7rem;
+        padding: 1px 4px;
+    }
 }
 
 /* Add this to your existing CSS to wrap the video and audio controls */
@@ -1217,4 +1286,35 @@ input[type="range"]::-webkit-slider-thumb {
         width: 24px;
         height: 24px;
     }
+}
+
+.playlist-item .item-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 500;
+    margin-bottom: 4px;
+}
+
+.playlist-item .status-icon {
+    font-size: 0.85rem;
+    opacity: 0.8;
+    color: var(--success-color);
+}
+
+.playlist-item.video-file .status-icon {
+    color: var(--video-color);
+}
+
+.playlist-item.audio-file .status-icon {
+    color: var(--audio-color);
+}
+
+.playlist-item.image-file .status-icon {
+    color: var(--image-color);
+}
+
+.playlist-item.selected .status-icon {
+    color: white;
+    opacity: 1;
 } 
