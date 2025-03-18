@@ -497,54 +497,68 @@ body {
 }
 
 .playlist-item .notes-content {
-    font-size: 0.85rem;
-    color: var(--text-color);
+    font-size: 1.2rem;
+    color: #ffeb3b; /* Bright yellow color */
     padding: 8px 10px;
     border-radius: 4px;
-    background-color: rgba(0, 0, 0, 0.2);
+    background-color: rgba(0, 0, 0, 0.3); /* Slightly darker background for contrast */
     min-height: 26px;
     cursor: text;
     line-height: 1.4;
     white-space: pre-line;
     word-wrap: break-word;
-    max-height: 150px;
+    max-height: 200px; /* Increased max height for larger text */
     overflow-y: auto;
+    font-weight: 500; /* Make text slightly bolder */
 }
 
 .playlist-item .notes-edit {
     width: 100%;
     resize: vertical;
-    min-height: 80px;
-    max-height: 200px;
+    min-height: 100px; /* Increased min height */
+    max-height: 300px; /* Increased max height */
     background-color: var(--dark-bg);
     color: var(--text-color);
     border: 1px solid var(--accent-color);
     border-radius: 4px;
     padding: 8px 10px;
     font-family: inherit;
-    font-size: 0.85rem;
+    font-size: 1.1rem; /* Larger font in edit mode too */
     margin-bottom: 8px;
     line-height: 1.4;
 }
 
+.playlist-item .notes-button-container {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
 .playlist-item .notes-save-btn {
-    background-color: var(--success-color);
+    padding: 6px 12px;
+    background-color: var(--accent-color);
     color: white;
     border: none;
     border-radius: 4px;
-    padding: 4px 12px;
-    font-size: 0.8rem;
     cursor: pointer;
-    transition: all 0.2s;
+    font-weight: bold;
 }
 
 .playlist-item .notes-save-btn:hover {
-    opacity: 0.9;
-    transform: translateY(-1px);
+    background-color: var(--accent-hover);
 }
 
-.playlist-item .notes-save-btn:active {
-    transform: translateY(0);
+.playlist-item .notes-cancel-btn {
+    padding: 6px 12px;
+    background-color: #555;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.playlist-item .notes-cancel-btn:hover {
+    background-color: #777;
 }
 
 /* Connection status styles */

@@ -854,10 +854,21 @@ class SmartPlayer {
         saveBtn.className = 'notes-save-btn';
         saveBtn.textContent = 'Save';
         
+        // Create cancel button
+        const cancelBtn = document.createElement('button');
+        cancelBtn.className = 'notes-cancel-btn';
+        cancelBtn.textContent = 'Cancel';
+        
         // Replace content with edit interface
         notesContent.replaceWith(editArea);
         editArea.appendChild(textarea);
-        editArea.appendChild(saveBtn);
+        
+        // Create a button container for better alignment
+        const buttonContainer = document.createElement('div');
+        buttonContainer.className = 'notes-button-container';
+        buttonContainer.appendChild(saveBtn);
+        buttonContainer.appendChild(cancelBtn);
+        editArea.appendChild(buttonContainer);
         
         // Focus the textarea
         textarea.focus();
@@ -895,22 +906,45 @@ class SmartPlayer {
                 e.stopPropagation();
                 this.editNotes(item, notesSection, newNotesContent);
             });
+        };
+        
+        // Handle cancel
+        const cancelEdit = () => {
+            // Create new content element without saving changes
+            const newNotesContent = document.createElement('div');
+            newNotesContent.className = 'notes-content';
             
-            // Remove event listeners
-            saveBtn.removeEventListener('click', saveNotes);
-            document.removeEventListener('click', handleOutsideClick);
-        };
-        
-        // Handle clicking outside
-        const handleOutsideClick = (e) => {
-            if (!editArea.contains(e.target) && !e.target.closest('.notes-edit-btn')) {
-                saveNotes();
+            // Show original notes
+            if (item.notes) {
+                const formattedNotes = item.notes.replace(/\n/g, '<br>');
+                newNotesContent.innerHTML = formattedNotes;
+            } else {
+                newNotesContent.textContent = 'Click to add notes...';
             }
+            
+            // Replace edit interface with new content
+            editArea.replaceWith(newNotesContent);
+            
+            // Add event listener for the new content element
+            newNotesContent.addEventListener('click', (e) => {
+                e.stopPropagation();
+                this.editNotes(item, notesSection, newNotesContent);
+            });
         };
         
-        // Add event listeners
+        // Add event listeners only to buttons, not to document clicks
         saveBtn.addEventListener('click', saveNotes);
-        document.addEventListener('click', handleOutsideClick);
+        cancelBtn.addEventListener('click', cancelEdit);
+        
+        // Stop propagation for textarea clicks to prevent playlist item click
+        textarea.addEventListener('click', (e) => {
+            e.stopPropagation();
+        });
+        
+        // Stop propagation for the edit area
+        editArea.addEventListener('click', (e) => {
+            e.stopPropagation();
+        });
     }
 
     getItemIcon(type) {
