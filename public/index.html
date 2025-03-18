@@ -59,47 +59,49 @@
                 </div>
 
                 <div id="playerControls">
-                    <div id="videoControls" class="control-group">
-                        <div class="control-header">
-                            <h3>Video</h3>
-                            <div id="selectedVideoTitle" class="selected-title"></div>
-                        </div>
-                        <div class="control-panel">
-                            <div class="buttons">
-                                <button id="playVideo" class="control-btn"><i class="fas fa-play"></i></button>
-                                <button id="pauseVideo" class="control-btn"><i class="fas fa-pause"></i></button>
-                                <button id="resetVideo" class="control-btn"><i class="fas fa-undo"></i></button>
-                                <div class="volume-control">
-                                    <button id="videoVolumeDown" class="control-btn small"><i class="fas fa-minus"></i></button>
-                                    <button id="videoVolumeUp" class="control-btn small"><i class="fas fa-plus"></i></button>
+                    <div class="media-controls-row">
+                        <div id="videoControls" class="control-group">
+                            <div class="control-header">
+                                <h3>Video</h3>
+                                <div id="selectedVideoTitle" class="selected-title"></div>
+                            </div>
+                            <div class="control-panel">
+                                <div class="buttons">
+                                    <button id="playVideo" class="control-btn"><i class="fas fa-play"></i></button>
+                                    <button id="pauseVideo" class="control-btn"><i class="fas fa-pause"></i></button>
+                                    <button id="resetVideo" class="control-btn"><i class="fas fa-undo"></i></button>
+                                    <div class="volume-control">
+                                        <button id="videoVolumeDown" class="control-btn small"><i class="fas fa-minus"></i></button>
+                                        <button id="videoVolumeUp" class="control-btn small"><i class="fas fa-plus"></i></button>
+                                    </div>
                                 </div>
+                                <div id="videoProgress" class="progress-bar">
+                                    <div class="progress-fill"></div>
+                                </div>
+                                <div class="time-display" id="videoTimeDisplay">0:00 / 0:00</div>
                             </div>
-                            <div id="videoProgress" class="progress-bar">
-                                <div class="progress-fill"></div>
-                            </div>
-                            <div class="time-display" id="videoTimeDisplay">0:00 / 0:00</div>
                         </div>
-                    </div>
 
-                    <div id="audioControls" class="control-group">
-                        <div class="control-header">
-                            <h3>Audio</h3>
-                            <div id="selectedAudioTitle" class="selected-title"></div>
-                        </div>
-                        <div class="control-panel">
-                            <div class="buttons">
-                                <button id="playAudio" class="control-btn"><i class="fas fa-play"></i></button>
-                                <button id="pauseAudio" class="control-btn"><i class="fas fa-pause"></i></button>
-                                <button id="resetAudio" class="control-btn"><i class="fas fa-undo"></i></button>
-                                <div class="volume-control">
-                                    <button id="audioVolumeDown" class="control-btn small"><i class="fas fa-minus"></i></button>
-                                    <button id="audioVolumeUp" class="control-btn small"><i class="fas fa-plus"></i></button>
+                        <div id="audioControls" class="control-group">
+                            <div class="control-header">
+                                <h3>Audio</h3>
+                                <div id="selectedAudioTitle" class="selected-title"></div>
+                            </div>
+                            <div class="control-panel">
+                                <div class="buttons">
+                                    <button id="playAudio" class="control-btn"><i class="fas fa-play"></i></button>
+                                    <button id="pauseAudio" class="control-btn"><i class="fas fa-pause"></i></button>
+                                    <button id="resetAudio" class="control-btn"><i class="fas fa-undo"></i></button>
+                                    <div class="volume-control">
+                                        <button id="audioVolumeDown" class="control-btn small"><i class="fas fa-minus"></i></button>
+                                        <button id="audioVolumeUp" class="control-btn small"><i class="fas fa-plus"></i></button>
+                                    </div>
                                 </div>
+                                <div id="audioProgress" class="progress-bar">
+                                    <div class="progress-fill"></div>
+                                </div>
+                                <div class="time-display" id="audioTimeDisplay">0:00 / 0:00</div>
                             </div>
-                            <div id="audioProgress" class="progress-bar">
-                                <div class="progress-fill"></div>
-                            </div>
-                            <div class="time-display" id="audioTimeDisplay">0:00 / 0:00</div>
                         </div>
                     </div>
 
