@@ -1023,50 +1023,86 @@ input[type="range"]::-webkit-slider-thumb {
 
     #mediaSection {
         flex: none;
-        padding: 10px;
+        padding: 8px;
     }
 
     #mediaContainer {
-        min-height: 200px;  /* Smaller height for mobile */
+        min-height: 160px;  /* Even smaller height for mobile */
+        max-height: 180px;  /* Limit maximum height */
         aspect-ratio: 16/9;
     }
 
+    /* Reorganize controls layout */
     #playerControls {
-        margin-top: 10px;
-        padding: 10px;
-        display: flex;
-        flex-direction: row;
-        gap: 5px;
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
-    }
-
-    .control-group {
-        flex: 1;
-        min-width: 200px;
+        margin-top: 8px;
         padding: 8px;
-        margin-bottom: 0;
-        border-left-width: 2px;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
     }
 
-    /* Compact control headers */
+    /* Container for video and audio controls */
+    .media-controls-row {
+        display: flex;
+        gap: 4px;
+        margin-bottom: 4px;
+    }
+
+    #videoControls,
+    #audioControls {
+        flex: 1;
+        min-width: 0; /* Allow shrinking */
+        padding: 8px;
+    }
+
+    /* Slim image controls */
+    #imageControls {
+        padding: 4px 8px;
+        margin-bottom: 4px;
+        display: flex;
+        align-items: center;
+        background-color: var(--primary-color);
+        border-left: 2px solid var(--image-color);
+        min-height: 36px;
+    }
+
+    #imageControls .control-header {
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        width: 100%;
+    }
+
+    #imageControls .control-header h3 {
+        font-size: 0.8rem;
+        white-space: nowrap;
+        margin: 0;
+        color: var(--image-color);
+    }
+
+    #imageControls .selected-title {
+        font-size: 0.8rem;
+        flex: 1;
+        margin: 0;
+        max-width: none;
+    }
+
+    /* Compact control headers for video and audio */
     .control-header {
-        margin-bottom: 5px;
+        margin-bottom: 4px;
     }
 
     .control-header h3 {
-        font-size: 0.9rem;
+        font-size: 0.85rem;
     }
 
     .selected-title {
-        font-size: 0.8rem;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        max-width: 120px;
+        font-size: 0.75rem;
+        max-width: 150px;
     }
 
-    /* Compact control panels */
+    /* More compact controls */
     .control-panel {
         gap: 3px;
     }
@@ -1076,231 +1112,75 @@ input[type="range"]::-webkit-slider-thumb {
     }
 
     .control-btn {
-        padding: 5px 8px;
+        padding: 4px 6px;
         font-size: 0.8rem;
     }
 
     .volume-control {
-        gap: 3px;
+        gap: 2px;
     }
 
     .volume-control .control-btn.small {
-        padding: 4px 6px;
+        padding: 3px 5px;
     }
 
     .volume-display {
         font-size: 0.7rem;
-        min-width: 35px;
+        min-width: 32px;
     }
 
     .progress-bar {
-        height: 8px;
-        margin: 5px 0;
+        height: 6px;
+        margin: 4px 0;
     }
 
     .time-display {
         font-size: 0.7rem;
-    }
-
-    /* Hide empty control groups */
-    .control-group:empty {
-        display: none;
-    }
-
-    /* Adjust playlist section for mobile */
-    #playlistSection {
-        flex: none;
-        min-width: unset;
-        max-height: calc(100vh - 400px);  /* Leave space for media and controls */
-    }
-
-    /* Make top bar more compact */
-    #topBar {
-        flex-direction: column;
-        gap: 10px;
-        padding: 8px;
-    }
-
-    #globalControls {
-        flex-wrap: wrap;
-        justify-content: center;
-        margin-left: 0;
-    }
-
-    /* Adjust connection status for mobile */
-    .connection-status {
-        width: 100%;
-        min-width: unset;
-    }
-
-    /* Make playlist items more touch-friendly */
-    .playlist-item {
-        padding: 12px;
-        margin-bottom: 6px;
-    }
-
-    .playlist-item i {
-        width: 32px;
-        height: 32px;
-        font-size: 1.2rem;
-    }
-
-    .playlist-item .item-controls {
-        margin-top: 8px;
-    }
-
-    .playlist-item .item-controls .control-btn {
-        padding: 8px;
-    }
-
-    /* Adjust volume controls for touch */
-    .volume-control {
-        gap: 8px;
-    }
-
-    .volume-control .control-btn {
-        padding: 8px;
-    }
-
-    /* Make progress bars easier to touch */
-    .progress-bar {
-        height: 15px;
-        margin: 8px 0;
-    }
-
-    /* Adjust video opacity control */
-    #videoOpacityControl {
-        width: 100%;
-        justify-content: space-between;
-        padding: 0 10px;
-    }
-
-    #videoOpacity {
-        flex: 1;
-        margin: 0 10px;
-        height: 20px;  /* Larger touch target */
-    }
-
-    /* Adjust notes section for mobile */
-    .notes-section {
-        margin-top: 10px;
-    }
-
-    .notes-content {
-        min-height: 40px;
-        max-height: 150px;
-    }
-
-    .notes-edit {
-        min-height: 80px;
-        max-height: 200px;
-    }
-
-    /* Make buttons more touch-friendly */
-    .notes-button-container {
-        gap: 15px;
-    }
-
-    .notes-save-btn,
-    .notes-cancel-btn {
-        padding: 10px 20px;
-        font-size: 1rem;
+        margin-top: 2px;
     }
 }
 
 /* Additional adjustments for very small screens */
 @media screen and (max-width: 480px) {
     #mediaContainer {
-        min-height: 160px;
+        min-height: 140px;
+        max-height: 160px;
+    }
+
+    #videoControls,
+    #audioControls {
+        padding: 6px;
+    }
+
+    #imageControls {
+        padding: 3px 6px;
+        min-height: 32px;
     }
 
     .control-btn {
-        padding: 4px 6px;
-    }
-
-    .control-btn.small {
-        padding: 6px;
-    }
-
-    #globalControls {
-        gap: 5px;
-    }
-
-    .playlist-item .item-controls {
-        flex-wrap: wrap;
-    }
-
-    /* Stack connection info on very small screens */
-    .connection-status {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-
-    .ws-url {
-        margin-left: 0;
-        margin-top: 4px;
-    }
-
-    /* Make controls even more compact on very small screens */
-    .control-group {
-        min-width: 160px;
-        padding: 6px;
-    }
-
-    .control-header h3 {
-        font-size: 0.8rem;
+        padding: 3px 5px;
     }
 
     .selected-title {
-        max-width: 100px;
-    }
-
-    /* Ensure horizontal scrolling is smooth */
-    #playerControls {
-        scrollbar-width: none; /* Firefox */
-        -ms-overflow-style: none; /* IE/Edge */
-    }
-
-    #playerControls::-webkit-scrollbar {
-        display: none; /* Chrome/Safari */
+        max-width: 120px;
     }
 }
 
-/* Add smooth scrolling behavior for the controls */
-#playerControls {
-    scroll-behavior: smooth;
-}
-
-/* Add visual indicator for horizontal scrolling on mobile */
+/* Add this to your existing CSS to wrap the video and audio controls */
 @media screen and (max-width: 768px) {
-    #playerControls::after {
-        content: '';
-        position: absolute;
-        right: 0;
-        top: 0;
-        bottom: 0;
-        width: 20px;
-        background: linear-gradient(to right, transparent, rgba(0,0,0,0.2));
-        pointer-events: none;
-        opacity: 0;
-        transition: opacity 0.3s;
+    #playerControls {
+        position: relative;
     }
 
-    #playerControls:not(:hover)::-webkit-scrollbar {
-        height: 0;
+    .media-controls-row {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
     }
 
-    #playerControls:hover::-webkit-scrollbar {
-        height: 4px;
-    }
-
-    #playerControls::-webkit-scrollbar-track {
-        background: rgba(0,0,0,0.1);
-    }
-
-    #playerControls::-webkit-scrollbar-thumb {
-        background: var(--accent-color);
-        border-radius: 2px;
+    .media-controls-row::-webkit-scrollbar {
+        display: none;
     }
 }
 
