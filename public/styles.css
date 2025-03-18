@@ -859,6 +859,21 @@ input[type="range"]::-webkit-slider-thumb {
     font-weight: bold;
 }
 
+/* Base icon styling */
+.playlist-item i {
+    font-size: 1.1rem;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 50%;
+    margin-right: 12px;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+}
+
 /* Color icons based on file type */
 .playlist-item.video-file i {
     color: var(--video-color);
@@ -870,6 +885,65 @@ input[type="range"]::-webkit-slider-thumb {
 
 .playlist-item.image-file i {
     color: var(--image-color);
+}
+
+/* When hovering, highlight the icon slightly */
+.playlist-item:hover i {
+    background-color: rgba(0, 0, 0, 0.3);
+}
+
+/* When an item is selected, make icon background more prominent */
+.playlist-item.selected i {
+    color: white !important;
+    background-color: rgba(255, 255, 255, 0.2);
+    text-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
+    transform: scale(1.1);
+}
+
+/* Add keyboard selection highlight for icons */
+.playlist-item.keyboard-selected i {
+    color: white !important;
+    background-color: rgba(255, 255, 255, 0.15);
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.3);
+    transform: scale(1.05);
+}
+
+/* File-type specific selected backgrounds */
+.playlist-item.video-file.selected i {
+    background-color: rgba(52, 152, 219, 0.6);
+}
+
+.playlist-item.audio-file.selected i {
+    background-color: rgba(231, 76, 60, 0.6);
+}
+
+.playlist-item.image-file.selected i {
+    background-color: rgba(46, 204, 113, 0.6);
+}
+
+/* When an item is playing, add a pulsing effect to the icon */
+.playlist-item.playing i {
+    color: white !important;
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.5);
+    animation: pulse 2s infinite;
+}
+
+/* When both selected and playing */
+.playlist-item.selected.playing i {
+    background-color: rgba(255, 255, 255, 0.3);
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.5), 0 0 10px rgba(255, 255, 255, 0.5);
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.5);
+    }
+    70% {
+        box-shadow: 0 0 0 5px rgba(255, 255, 255, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);
+    }
 }
 
 /* Make the control groups match the media type colors */
