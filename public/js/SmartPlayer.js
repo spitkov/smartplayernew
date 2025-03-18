@@ -608,19 +608,11 @@ class SmartPlayer {
                 break;
             case 'player.wsOverrideConfirm':
                 // Handle WebSocket override confirmation from another instance
-                if (msg.url) {
+                if (msg.url !== undefined) {  // Check if url is defined (can be empty string)
                     localStorage.setItem('wsOverrideUrl', msg.url);
                     this.overrideWsUrl = msg.url;
                     if (msg.reconnect && this.socket && this.socket.readyState === WebSocket.OPEN) {
                         this.connectWebSocket();
-                    }
-                    // Only show alerts if this instance initiated the change
-                    if (msg.isInitiator) {
-                        if (msg.url.trim() === '') {
-                            alert('WebSocket override cleared. Will use default server address on next connection.');
-                        } else {
-                            alert(`WebSocket override set to: ${msg.url}\nWill connect to this address on next connection.`);
-                        }
                     }
                 }
                 break;
@@ -1671,26 +1663,37 @@ class SmartPlayer {
             if (newUrl !== null) {
                 if (newUrl.trim() === '') {
                     // User wants to clear the override
-                    localStorage.removeItem('wsOverrideUrl');
+                    localStorage.setItem('wsOverrideUrl', '');
                     this.overrideWsUrl = null;
                     alert('WebSocket override cleared. Will use default server address on next connection.');
+                    
+                    // If we're connected, ask if they want to reconnect now
+                    if (this.socket && this.socket.readyState === WebSocket.OPEN) {
+                        if (confirm('Do you want to reconnect using the new address now?')) {
+                            // Send confirmation to other instances after user confirms
+                            this.sendSocketMessage('player.wsOverrideConfirm', {
+                                url: '',
+                                reconnect: true
+                            });
+                            this.connectWebSocket();
+                        }
+                    }
                 } else {
-                    // Save the override URL
+                    // Save the override URL locally first
                     localStorage.setItem('wsOverrideUrl', newUrl);
                     this.overrideWsUrl = newUrl;
                     alert(`WebSocket override set to: ${newUrl}\nWill connect to this address on next connection.`);
-                }
-                
-                // If we're connected, ask if they want to reconnect now
-                if (this.socket && this.socket.readyState === WebSocket.OPEN) {
-                    if (confirm('Do you want to reconnect using the new address now?')) {
-                        // Only send confirmation to other instances if user confirms
-                        this.sendSocketMessage('player.wsOverrideConfirm', {
-                            url: newUrl,
-                            reconnect: true,
-                            isInitiator: true
-                        });
-                        this.connectWebSocket();
+                    
+                    // If we're connected, ask if they want to reconnect now
+                    if (this.socket && this.socket.readyState === WebSocket.OPEN) {
+                        if (confirm('Do you want to reconnect using the new address now?')) {
+                            // Only send confirmation to other instances after user confirms
+                            this.sendSocketMessage('player.wsOverrideConfirm', {
+                                url: newUrl,
+                                reconnect: true
+                            });
+                            this.connectWebSocket();
+                        }
                     }
                 }
             }
