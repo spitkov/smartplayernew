@@ -408,12 +408,21 @@ class SmartPlayer {
                     const newFile = this.getFileById(msg.fileID);
                     
                     if (currentFile && newFile) {
-                        // Check if we're trying to switch to a new video/audio while one is playing
-                        if ((currentFile.type === 'video' && this.videoPlayer.played.length > 0 && !this.videoPlayer.paused) ||
-                            (currentFile.type === 'audio' && this.audioPlayer.played.length > 0 && !this.audioPlayer.paused)) {
+                        // Skip confirmation when switching to images while audio is playing
+                        // Only show confirmation for other media type switches
+                        const isAudioPlayingAndSwitchingToImage = 
+                            currentFile.type === 'audio' && 
+                            newFile.type === 'image' && 
+                            this.audioPlayer.played.length > 0 && 
+                            !this.audioPlayer.paused;
                             
-                            // Always show confirmation when switching while media is playing,
-                            // regardless of whether it's the same type or different type
+                        // Check if we're trying to switch to a new video/audio while one is playing
+                        // But exclude the case of switching to images while audio is playing
+                        if (!isAudioPlayingAndSwitchingToImage && 
+                            ((currentFile.type === 'video' && this.videoPlayer.played.length > 0 && !this.videoPlayer.paused) ||
+                             (currentFile.type === 'audio' && this.audioPlayer.played.length > 0 && !this.audioPlayer.paused))) {
+                            
+                            // Show confirmation when switching while media is playing
                             const confirmMessage = currentFile.type === newFile.type ? 
                                 `The current ${currentFile.type} hasn't ended yet. Are you sure you want to play another ${newFile.type}?` :
                                 `The current ${currentFile.type} hasn't ended yet. Are you sure you want to switch to ${newFile.type}?`;
