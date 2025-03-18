@@ -1684,7 +1684,7 @@ class SmartPlayer {
                 // If we're connected, ask if they want to reconnect now
                 if (this.socket && this.socket.readyState === WebSocket.OPEN) {
                     if (confirm('Do you want to reconnect using the new address now?')) {
-                        // Send confirmation to other instances
+                        // Only send confirmation to other instances if user confirms
                         this.sendSocketMessage('player.wsOverrideConfirm', {
                             url: newUrl,
                             reconnect: true,
