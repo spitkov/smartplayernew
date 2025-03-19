@@ -716,24 +716,15 @@ class SmartPlayer {
         title.className = 'item-title';
         title.textContent = item.title;
         
-        // Add status icon if this is a file
-        if (type === 'file') {
-            // Check if this item is currently selected based on the player control titles
-            const isVideoSelected = item.type === 'video' && this.selectedVideoTitle.textContent === item.title;
-            const isAudioSelected = item.type === 'audio' && this.selectedAudioTitle.textContent === item.title;
-            const isImageSelected = item.type === 'image' && this.selectedImageTitle.textContent === item.title;
-            
-            // Create status icon if this item is currently selected
-            if (isVideoSelected || isAudioSelected || isImageSelected) {
-                const statusIcon = document.createElement('i');
-                statusIcon.className = 'fas fa-check status-icon';
-                title.appendChild(statusIcon);
-            }
-        }
-        
         const description = document.createElement('div');
         description.className = 'item-description';
-        
+
+        // Add filename
+        const filenameText = document.createElement('span');
+        filenameText.className = 'filename-text';
+        filenameText.textContent = item.fileName;
+        description.appendChild(filenameText);
+
         // Add duration span for video and audio files
         if (type === 'file' && (item.type === 'video' || item.type === 'audio')) {
             const durationSpan = document.createElement('span');
@@ -825,30 +816,81 @@ class SmartPlayer {
             const notesSection = document.createElement('div');
             notesSection.className = 'notes-section';
             
-            const notesHeader = document.createElement('div');
-            notesHeader.className = 'notes-header';
-            notesHeader.innerHTML = '<span>Notes</span>';
-            
             const notesContent = document.createElement('div');
             notesContent.className = 'notes-content';
+            notesContent.contentEditable = 'true';
+            notesContent.placeholder = ' ';
             
             // Handle multiline notes by properly formatting with line breaks
             if (item.notes) {
                 // Replace newlines with <br> tags for proper display
                 const formattedNotes = item.notes.replace(/\n/g, '<br>');
                 notesContent.innerHTML = formattedNotes;
-            } else {
-                notesContent.textContent = 'Click to add notes...';
             }
+
+            // Create button container
+            const buttonContainer = document.createElement('div');
+            buttonContainer.className = 'notes-button-container';
+            buttonContainer.style.display = 'none'; // Initially hidden
+
+            // Create save button
+            const saveBtn = document.createElement('button');
+            saveBtn.className = 'notes-save-btn';
+            saveBtn.textContent = 'Save';
             
-            // Add event to edit notes
-            notesContent.addEventListener('click', (e) => {
+            // Create cancel button
+            const cancelBtn = document.createElement('button');
+            cancelBtn.className = 'notes-cancel-btn';
+            cancelBtn.textContent = 'Cancel';
+
+            // Add buttons to container
+            buttonContainer.appendChild(saveBtn);
+            buttonContainer.appendChild(cancelBtn);
+
+            let originalNotes = item.notes || '';
+            
+            // Show buttons when editing starts
+            notesContent.addEventListener('focus', (e) => {
                 e.stopPropagation();
-                this.editNotes(item, notesSection, notesContent);
+                buttonContainer.style.display = 'flex';
+                originalNotes = notesContent.innerText;
             });
             
-            notesSection.appendChild(notesHeader);
+            // Handle save button click
+            saveBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const newNotes = notesContent.innerText;
+                item.notes = newNotes;
+                
+                // Save to server
+                this.sendSocketMessage('player.setNotes', {
+                    folderID: this.currentFolder,
+                    fileID: item.id,
+                    notes: newNotes
+                });
+                
+                buttonContainer.style.display = 'none';
+            });
+            
+            // Handle cancel button click
+            cancelBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                if (originalNotes) {
+                    const formattedNotes = originalNotes.replace(/\n/g, '<br>');
+                    notesContent.innerHTML = formattedNotes;
+                } else {
+                    notesContent.innerHTML = '';
+                }
+                buttonContainer.style.display = 'none';
+            });
+            
+            // Prevent playlist item click when editing notes
+            notesContent.addEventListener('click', (e) => {
+                e.stopPropagation();
+            });
+            
             notesSection.appendChild(notesContent);
+            notesSection.appendChild(buttonContainer);
             div.appendChild(notesSection);
         }
 
