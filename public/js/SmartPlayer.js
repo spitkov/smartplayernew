@@ -1424,30 +1424,6 @@ class SmartPlayer {
         };
 
         switch (e.key) {
-            // Original keyboard shortcuts
-            case 'u':
-                simulateButtonPress(this.playVideoBtn);
-                break;
-            case 'i':
-                simulateButtonPress(this.pauseVideoBtn);
-                break;
-            case 'j':
-                simulateButtonPress(this.playAudioBtn);
-                break;
-            case 'k':
-                simulateButtonPress(this.pauseAudioBtn);
-                break;
-            case 'b':
-            case 'Enter': // Changed from '0' to 'Enter' for black screen
-                simulateButtonPress(this.blackScreenBtn);
-                break;
-            case 'o':
-                simulateButtonPress(this.resetVideoBtn);
-                break;
-            case 'l':
-                simulateButtonPress(this.resetAudioBtn);
-                break;
-
             // Number key navigation
             case '5':
             case 'ArrowUp':
@@ -1481,7 +1457,10 @@ class SmartPlayer {
                     simulateButtonPress(this.pauseVideoBtn);
                 }
                 break;
-            case '0': // Changed from 'Enter' to '0' for selection
+            case 'Enter': // Black screen
+                simulateButtonPress(this.blackScreenBtn);
+                break;
+            case '0': // Selection
                 this.handleEnterKey();
                 break;
         }
