@@ -1402,8 +1402,11 @@ class SmartPlayer {
     }
 
     handleKeyboardControls(e) {
-        // Don't handle keyboard events if user is typing in an input
-        if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
+        // Don't handle keyboard events if user is typing in an input, textarea, or contenteditable element
+        if (e.target.tagName === 'INPUT' || 
+            e.target.tagName === 'TEXTAREA' || 
+            e.target.isContentEditable ||
+            e.target.closest('[contenteditable="true"]')) {
             return;
         }
 
@@ -1456,6 +1459,12 @@ class SmartPlayer {
                 } else {
                     simulateButtonPress(this.pauseVideoBtn);
                 }
+                break;
+            case '7': // Reset audio
+                simulateButtonPress(this.resetAudioBtn);
+                break;
+            case '9': // Reset video
+                simulateButtonPress(this.resetVideoBtn);
                 break;
             case 'Enter': // Black screen
                 simulateButtonPress(this.blackScreenBtn);
