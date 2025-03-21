@@ -563,16 +563,23 @@ class SmartPlayer {
                 break;
                 
             case 'player.setFileOrder':
-                // Update file order when received from another client
-                if (msg.folderID && Array.isArray(msg.fileOrder)) {
-                    const folder = this.projectData.folders[msg.folderID];
-                    if (folder) {
-                        folder.fileOrder = msg.fileOrder;
-                        
-                        // Refresh playlist if we're currently viewing this folder
-                        if (this.currentFolder === msg.folderID) {
-                            this.refreshPlaylist();
-                        }
+                if (msg.folderID && this.projectData.folders[msg.folderID]) {
+                    console.log('Received new file order:', msg.fileOrder);
+                    this.projectData.folders[msg.folderID].fileOrder = msg.fileOrder;
+                    if (this.currentFolder === msg.folderID) {
+                        // Only refresh if we're viewing this folder
+                        this.refreshPlaylist();
+                    }
+                }
+                break;
+                
+            case 'player.setFolderOrder':
+                if (Array.isArray(msg.folderOrder)) {
+                    console.log('Received new folder order:', msg.folderOrder);
+                    this.projectData.folderOrder = msg.folderOrder;
+                    if (!this.currentFolder) {
+                        // Only refresh if we're at the root folder view
+                        this.refreshPlaylist();
                     }
                 }
                 break;
@@ -605,6 +612,16 @@ class SmartPlayer {
                     }
                 }
                 break;
+            case 'player.fadeAudio':
+                // Handle the fade audio request from another client
+                if (msg.originalVolume !== undefined) {
+                    // Execute the fade locally
+                    this.performAudioFade(msg.originalVolume);
+                    
+                    // Display a notification
+                    this.showNotification("Fading audio out over 5 seconds...");
+                }
+                break;
         }
     }
 
@@ -619,9 +636,28 @@ class SmartPlayer {
             this.backButton.classList.add('hidden');
             this.currentPath.textContent = 'Root';
             if (this.projectData && this.projectData.folders) {
-                Object.values(this.projectData.folders).forEach(folder => {
-                    this.createPlaylistItem(folder, 'folder');
-                });
+                // Use folderOrder if available to determine the order of folders
+                if (this.projectData.folderOrder && Array.isArray(this.projectData.folderOrder)) {
+                    // First ensure all folders are included in folderOrder
+                    const folderIdSet = new Set(this.projectData.folderOrder);
+                    Object.keys(this.projectData.folders).forEach(folderId => {
+                        if (!folderIdSet.has(folderId)) {
+                            this.projectData.folderOrder.push(folderId);
+                        }
+                    });
+                    
+                    // Then display folders in the specified order
+                    this.projectData.folderOrder.forEach(folderId => {
+                        if (this.projectData.folders[folderId]) {
+                            this.createPlaylistItem(this.projectData.folders[folderId], 'folder');
+                        }
+                    });
+                } else {
+                    // Fallback to unordered display if folderOrder is not available
+                    Object.values(this.projectData.folders).forEach(folder => {
+                        this.createPlaylistItem(folder, 'folder');
+                    });
+                }
             }
         } else {
             // Show files in current folder
@@ -700,6 +736,9 @@ class SmartPlayer {
             } else if (item.type === 'image') {
                 div.classList.add('image-file');
             }
+        } else if (type === 'folder') {
+            div.setAttribute('data-folder-id', item.id);
+            div.classList.add('folder-item');
         }
 
         // Create header section to contain icon, title and controls
@@ -809,6 +848,34 @@ class SmartPlayer {
             header.appendChild(controls);
         }
 
+        // Add order buttons for folders
+        if (type === 'folder') {
+            const orderControls = document.createElement('div');
+            orderControls.className = 'order-controls';
+            
+            const upButton = document.createElement('button');
+            upButton.className = 'control-btn small';
+            upButton.innerHTML = '<i class="fas fa-arrow-up"></i>';
+            upButton.title = 'Move up';
+            upButton.addEventListener('click', (e) => {
+                e.stopPropagation();
+                this.moveFolder(item, 'up');
+            });
+            
+            const downButton = document.createElement('button');
+            downButton.className = 'control-btn small';
+            downButton.innerHTML = '<i class="fas fa-arrow-down"></i>';
+            downButton.title = 'Move down';
+            downButton.addEventListener('click', (e) => {
+                e.stopPropagation();
+                this.moveFolder(item, 'down');
+            });
+            
+            orderControls.appendChild(upButton);
+            orderControls.appendChild(downButton);
+            header.appendChild(orderControls);
+        }
+
         div.appendChild(header);
 
         // Add notes section for files only
@@ -894,11 +961,15 @@ class SmartPlayer {
             div.appendChild(notesSection);
         }
 
+        // Add click handler for the item
         div.addEventListener('click', () => {
             if (type === 'folder') {
+                this.currentFolder = item.id;
                 this.sendSocketMessage('player.selectFolder', { folderID: item.id });
-            } else {
+            } else if (type === 'file') {
+                this.currentFile = item.id;
                 this.sendSocketMessage('player.selectFile', { fileID: item.id });
+                this.loadMedia();
             }
         });
 
@@ -1443,6 +1514,12 @@ class SmartPlayer {
                 }
                 break;
             case '3':
+                // Fade out current audio over 5 seconds
+                if (this.audioPlayer.src && !this.audioPlayer.paused) {
+                    console.log("Triggering audio fade out from keyboard");
+                    this.fadeOutAndPauseAudio();
+                }
+                break;
             case 'ArrowRight':
                 // Right arrow currently has no function
                 break;
@@ -1749,6 +1826,76 @@ class SmartPlayer {
         }, 10); // Small delay to ensure DOM is updated
     }
 
+    // Move folder up or down in the order
+    moveFolder(item, direction) {
+        if (!item) return;
+        
+        // Get ordered array of folder IDs
+        let folderIds = this.projectData.folderOrder || Object.keys(this.projectData.folders);
+        
+        // Make sure folderOrder contains all folders
+        if (!this.projectData.folderOrder) {
+            this.projectData.folderOrder = folderIds;
+        } else {
+            // Make sure folderOrder contains all folders
+            const existingIds = new Set(this.projectData.folderOrder);
+            Object.keys(this.projectData.folders).forEach(id => {
+                if (!existingIds.has(id)) {
+                    this.projectData.folderOrder.push(id);
+                }
+            });
+            
+            // Remove any IDs from folderOrder that no longer exist
+            this.projectData.folderOrder = this.projectData.folderOrder.filter(id => this.projectData.folders[id]);
+            
+            // Use the existing order
+            folderIds = this.projectData.folderOrder;
+        }
+        
+        // Find current position of the item
+        const currentIndex = folderIds.indexOf(item.id);
+        if (currentIndex === -1) return;
+        
+        // Calculate new position
+        let newIndex;
+        if (direction === 'up') {
+            // Move up (towards index 0)
+            newIndex = Math.max(0, currentIndex - 1);
+        } else {
+            // Move down (towards end of array)
+            newIndex = Math.min(folderIds.length - 1, currentIndex + 1);
+        }
+        
+        // Don't do anything if the item is already at the limit
+        if (newIndex === currentIndex) return;
+        
+        // Reorder the array
+        folderIds.splice(currentIndex, 1); // Remove from current position
+        folderIds.splice(newIndex, 0, item.id); // Insert at new position
+        
+        // Update the folderOrder
+        this.projectData.folderOrder = folderIds;
+        
+        // Send order change to server
+        this.sendSocketMessage('player.setFolderOrder', {
+            folderOrder: folderIds
+        });
+        
+        // Refresh the playlist to reflect the new order
+        this.refreshPlaylist();
+        
+        // Add animation to the moved item
+        setTimeout(() => {
+            const movedItem = document.querySelector(`.playlist-item[data-folder-id="${item.id}"]`);
+            if (movedItem) {
+                movedItem.classList.add('reordering');
+                setTimeout(() => {
+                    movedItem.classList.remove('reordering');
+                }, 400); // Match duration of the animation
+            }
+        }, 10); // Small delay to ensure DOM is updated
+    }
+
     // Add the WebSocket override functionality
     initializeWsOverride() {
         // Check for stored override URL in localStorage
@@ -1845,6 +1992,141 @@ class SmartPlayer {
         this.audioPlayer.pause();
         
         console.log('Media playback enabled by user interaction');
+    }
+
+    // Method to fade out audio over 5 seconds, pause, and restore volume
+    fadeOutAndPauseAudio() {
+        if (!this.audioPlayer.src || this.audioPlayer.paused) {
+            console.log("No active audio to fade out");
+            return;
+        }
+
+        // Display a notification
+        this.showNotification("Fading audio out over 5 seconds...");
+
+        // Store current volume for restoration
+        const originalVolume = this.audioPlayer.volume;
+        const file = this.currentFolder && this.currentFile ? 
+            this.projectData.folders[this.currentFolder].files[this.currentFile] : null;
+        
+        // Broadcast the fade command to all clients
+        this.sendSocketMessage('player.fadeAudio', {
+            folderID: this.currentFolder,
+            fileID: this.currentFile,
+            originalVolume: originalVolume
+        });
+        
+        // Implement the actual fade locally
+        this.performAudioFade(originalVolume);
+    }
+    
+    // Show notification message
+    showNotification(message, duration = 3000) {
+        // Check if notification container exists, create if not
+        let notificationContainer = document.getElementById('notificationContainer');
+        if (!notificationContainer) {
+            notificationContainer = document.createElement('div');
+            notificationContainer.id = 'notificationContainer';
+            document.body.appendChild(notificationContainer);
+        }
+        
+        // Create notification element
+        const notification = document.createElement('div');
+        notification.className = 'notification';
+        notification.textContent = message;
+        
+        // Add to container
+        notificationContainer.appendChild(notification);
+        
+        // Animate in
+        setTimeout(() => {
+            notification.classList.add('show');
+        }, 10);
+        
+        // Remove after duration
+        setTimeout(() => {
+            notification.classList.remove('show');
+            setTimeout(() => {
+                notification.remove();
+            }, 300); // Allow time for fade out animation
+        }, duration);
+    }
+    
+    // Perform the actual fade animation
+    performAudioFade(originalVolume) {
+        // Store original volume for restoration
+        const storedOriginalVolume = originalVolume || this.audioPlayer.volume;
+        
+        console.log("Starting audio fade out from volume:", storedOriginalVolume);
+        
+        // Start at current volume
+        let currentVolume = this.audioPlayer.volume;
+        const fadeSteps = 50; // Number of steps for smooth fade (10 per second)
+        const fadeInterval = 5000 / fadeSteps; // Total 5 seconds
+        const volumeStep = currentVolume / fadeSteps;
+        
+        // Add visual indication that fade is happening
+        const audioControl = document.getElementById('audioControls');
+        if (audioControl) {
+            audioControl.classList.add('audio-fading');
+        }
+        
+        // Create the fade interval
+        const fadeTimer = setInterval(() => {
+            // Reduce volume by one step
+            currentVolume = Math.max(0, currentVolume - volumeStep);
+            
+            // Apply the new volume
+            this.audioPlayer.volume = currentVolume;
+            this.updateVolumeDisplay('audio', currentVolume);
+            
+            // Update the file volume in data model
+            if (this.currentFolder && this.currentFile) {
+                const file = this.projectData.folders[this.currentFolder].files[this.currentFile];
+                if (file) {
+                    file.volume = currentVolume;
+                }
+            }
+            
+            // If volume is effectively 0, stop the interval and pause
+            if (currentVolume <= 0.01) {
+                clearInterval(fadeTimer);
+                
+                // Pause the audio
+                this.audioPlayer.pause();
+                
+                // Send pause message to all clients
+                this.sendSocketMessage('player.pauseAudio');
+                
+                // Remove visual indication
+                if (audioControl) {
+                    audioControl.classList.remove('audio-fading');
+                }
+                
+                // Reset volume to original after pausing
+                setTimeout(() => {
+                    this.audioPlayer.volume = storedOriginalVolume;
+                    this.updateVolumeDisplay('audio', storedOriginalVolume);
+                    
+                    // Update the file's volume back to original
+                    if (this.currentFolder && this.currentFile) {
+                        const file = this.projectData.folders[this.currentFolder].files[this.currentFile];
+                        if (file) {
+                            file.volume = storedOriginalVolume;
+                            
+                            // Send the final volume update to all clients
+                            this.sendSocketMessage('player.setVolumeOfFile', {
+                                folderID: this.currentFolder,
+                                fileID: this.currentFile,
+                                volume: storedOriginalVolume
+                            });
+                        }
+                    }
+                    
+                    console.log("Fade out complete, volume restored to:", storedOriginalVolume);
+                }, 100);
+            }
+        }, fadeInterval);
     }
 }
 

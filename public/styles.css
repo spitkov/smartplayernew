@@ -49,6 +49,17 @@ body {
     border-bottom: 1px solid var(--border-color);
 }
 
+.app-name {
+    margin-right: 15px;
+}
+
+.app-name h1 {
+    color: var(--accent-color);
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin: 0;
+}
+
 #globalControls {
     display: flex;
     align-items: center;
@@ -530,7 +541,31 @@ body {
 .playlist-item .item-controls {
     display: flex;
     gap: 5px;
-    align-items: center;
+}
+
+.order-controls {
+    display: flex;
+    gap: 5px;
+    margin-left: auto;
+}
+
+.order-controls .control-btn {
+    background-color: rgba(0, 0, 0, 0.3);
+    color: var(--text-color);
+    border: none;
+    padding: 4px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.1s;
+    font-size: 0.8rem;
+}
+
+.order-controls .control-btn:hover {
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.order-controls .control-btn:active {
+    transform: scale(0.95);
 }
 
 .playlist-item .item-controls .control-btn {
@@ -1152,6 +1187,10 @@ input[type="range"]::-webkit-slider-thumb {
         overflow: hidden;
     }
 
+    .app-name h1 {
+        font-size: 1.2rem;
+    }
+
     #mainContent {
         flex: 1;
         flex-direction: column;
@@ -1302,6 +1341,10 @@ input[type="range"]::-webkit-slider-thumb {
         max-height: 160px;
     }
 
+    .app-name h1 {
+        font-size: 1rem;
+    }
+
     #videoControls,
     #audioControls {
         padding: 6px;
@@ -1407,5 +1450,51 @@ input[type="range"]::-webkit-slider-thumb {
 
 .playlist-item.selected .status-icon {
     color: white;
+    opacity: 1;
+}
+
+/* Audio fade animation */
+@keyframes fade-pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.5; }
+    100% { opacity: 1; }
+}
+
+.audio-fading {
+    animation: fade-pulse 1s infinite;
+}
+
+.audio-fading .progress-fill {
+    background-color: var(--error-color) !important;
+}
+
+/* Notification styles */
+#notificationContainer {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    pointer-events: none;
+}
+
+.notification {
+    background-color: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 12px 20px;
+    border-radius: 6px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    transform: translateX(120%);
+    opacity: 0;
+    transition: all 0.3s ease;
+    font-weight: 500;
+    border-left: 4px solid var(--accent-color);
+    max-width: 300px;
+}
+
+.notification.show {
+    transform: translateX(0);
     opacity: 1;
 } 

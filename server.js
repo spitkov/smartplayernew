@@ -24,7 +24,8 @@ app.use(express.static('public'));
 let projectData = {
     folders: {},
     currentFolder: null,
-    currentFile: null
+    currentFile: null,
+    folderOrder: []
 };
 
 // Load project data from JSON if exists
@@ -115,6 +116,23 @@ function scanMediaDirectory() {
             delete projectData.folders[folderId];
         }
     });
+
+    // Ensure all folders are in folderOrder and remove any that no longer exist
+    if (!projectData.folderOrder) {
+        projectData.folderOrder = Object.keys(projectData.folders);
+    } else {
+        // Add any new folders that aren't already in the order
+        Object.keys(projectData.folders).forEach(folderId => {
+            if (!projectData.folderOrder.includes(folderId)) {
+                projectData.folderOrder.push(folderId);
+            }
+        });
+        
+        // Remove any folders from the order that no longer exist
+        projectData.folderOrder = projectData.folderOrder.filter(folderId => 
+            projectData.folders[folderId] !== undefined
+        );
+    }
 
     saveProjectData();
     console.log('Media directory scan complete');
@@ -269,11 +287,34 @@ wss.on('connection', (ws, req) => {
                         }, ws);
                     }
                     break;
+                case 'player.setFolderOrder':
+                    if (Array.isArray(msg.folderOrder)) {
+                        console.log('Setting folder order');
+                        // Store the folder order in the project data
+                        projectData.folderOrder = msg.folderOrder;
+                        saveProjectData();
+                        
+                        // Broadcast the new folder order to all clients
+                        broadcastMessage({
+                            type: 'player.setFolderOrder',
+                            folderOrder: msg.folderOrder
+                        }, ws);
+                    }
+                    break;
                 case 'player.videoOpacity':
                     // Broadcast opacity change to all clients
                     broadcastMessage({
                         type: 'player.videoOpacity',
                         value: msg.value
+                    });
+                    break;
+                case 'player.fadeAudio':
+                    // Broadcast fade audio command to all clients
+                    broadcastMessage({
+                        type: 'player.fadeAudio',
+                        folderID: msg.folderID,
+                        fileID: msg.fileID,
+                        originalVolume: msg.originalVolume
                     });
                     break;
                 case 'player.wsOverrideConfirm':
